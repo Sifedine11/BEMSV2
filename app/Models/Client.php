@@ -36,10 +36,7 @@ class Client extends Model
         'date_naissance'   => 'date',
     ];
 
-    /**
-     * Détermine dynamiquement le nom de la colonne "chauffeur" dans une table pivot.
-     * Priorité : chauffeur_id > utilisateur_id > user_id
-     */
+
     protected function detectChauffeurPivotKey(string $pivotTable): string
     {
         $fallback = 'chauffeur_id';

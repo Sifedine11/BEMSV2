@@ -28,7 +28,7 @@ class DisponibiliteController extends Controller
             ->orderBy('heure_debut')
             ->get();
 
-        // --- NOUVEAU : Toutes les disponibilités FUTURES ou EN COURS ---
+
         // Règle d’affichage :
         //  - date_jour > today  => toutes
         //  - date_jour = today  => seulement celles dont heure_fin >= maintenant
@@ -75,9 +75,9 @@ class DisponibiliteController extends Controller
             'heure_fin'      => $hf,
         ]);
 
-        // Répéter toutes les semaines (optionnel)
+        // Répéter toutes les semaines
         if ($request->boolean('repeter')) {
-            // on crée +4 semaines (ajuste si tu veux)
+            // on crée +4 semaines
             $start = Carbon::parse($date)->copy();
             for ($i = 1; $i <= 4; $i++) {
                 $d = $start->copy()->addWeeks($i)->toDateString();

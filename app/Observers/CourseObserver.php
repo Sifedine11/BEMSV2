@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CourseObserver
 {
-    /**
-     * Déclenché sur create + update.
-     */
+
     public function saving(Course $course): void
     {
         // 1) Extraire les CP des adresses

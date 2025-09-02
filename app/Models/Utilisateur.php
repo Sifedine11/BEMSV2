@@ -25,9 +25,7 @@ class Utilisateur extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Indique à Laravel quelle colonne contient le mot de passe haché.
-     */
+
     public function getAuthPassword()
     {
         return $this->mot_de_passe;

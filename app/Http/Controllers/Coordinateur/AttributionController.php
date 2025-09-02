@@ -17,10 +17,8 @@ class AttributionController extends Controller
 {
     public function index(Request $request)
     {
-        // sens du tri (par défaut DESC = plus récentes -> plus anciennes)
         $dir = strtolower($request->input('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-        // Courses à attribuer (pas de chauffeur / statut à attribuer)
         $query = Course::query()
             ->when($this->courseHas('chauffeur_id'), fn($q) => $q->whereNull('chauffeur_id'))
             ->when($this->courseHas('statut'), function ($q) {
@@ -30,7 +28,6 @@ class AttributionController extends Controller
         $this->filterDates($query, $request);
         $this->filterClient($query, $request);
 
-        // Tri dynamique date/heure selon $dir
         if ($this->courseHas('date_service')) {
             $query->orderBy('date_service', $dir);
         }
@@ -40,26 +37,23 @@ class AttributionController extends Controller
 
         $courses = $query->paginate(20)->withQueryString();
 
-        // Clients pour l'affichage (toujours safe)
         $clients = Client::query()
             ->select(['id', DB::raw("COALESCE(nom,'') as nom"), DB::raw("COALESCE(prenom,'') as prenom")])
             ->orderBy('nom')->orderBy('prenom')
             ->get();
 
-        // === Base chauffeurs (sélection & tri dynamiques) ===
         [$userSelect, $orderExpr] = $this->userSelectAndOrder();
         $chauffeursBase = Utilisateur::query()
             ->when($this->userHas('role'), function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('role', 'chauffeur')
-                       ->orWhere('role', 'driver'); // tolérant si autre libellé
+                       ->orWhere('role', 'driver');
                 });
             })
             ->when($this->userHas('actif'), fn($q) => $q->where('actif', 1))
             ->when($orderExpr !== null, fn($q) => $q->orderByRaw($orderExpr))
             ->get($userSelect);
 
-        // Injecter les chauffeurs dispo pour chaque course
         foreach ($courses as $c) {
             $date = $this->toYmd($c->date_service);
             $time = $this->toHis($c->heure_depart);
@@ -69,7 +63,7 @@ class AttributionController extends Controller
         return view('coordinateur.courses.a_attribuer', [
             'courses' => $courses,
             'clients' => $clients,
-            'dir'     => $dir, // pour le bouton Trier
+            'dir'     => $dir,
         ]);
     }
 
@@ -91,7 +85,6 @@ class AttributionController extends Controller
             ->select(['id', DB::raw("COALESCE(nom,'') as nom"), DB::raw("COALESCE(prenom,'') as prenom")])
             ->orderBy('nom')->orderBy('prenom')->get();
 
-        // pour l’affichage des noms chauffeur, même logique que plus haut
         [$userSelect, $orderExpr] = $this->userSelectAndOrder();
         $chauffeurs = Utilisateur::query()
             ->when($orderExpr !== null, fn($q) => $q->orderByRaw($orderExpr))
@@ -143,7 +136,6 @@ class AttributionController extends Controller
         ]);
     }
 
-    /* ============================ Internes ============================ */
 
     protected function filterDates($query, Request $request): void
     {
@@ -178,9 +170,6 @@ class AttributionController extends Controller
         }
     }
 
-    /**
-     * Récupère les chauffeurs disponibles pour une date (Y-m-d) et une heure (H:i:s).
-     */
     protected function findAvailableDrivers(?string $dateYmd, ?string $timeHis, $chauffeursBase): array
     {
         if (!$dateYmd || !$timeHis) return [];
@@ -234,7 +223,6 @@ class AttributionController extends Controller
         })->all();
     }
 
-    /* ------------------------- Helpers génériques ------------------------- */
 
     protected function userSelectAndOrder(): array
     {

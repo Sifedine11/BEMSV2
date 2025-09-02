@@ -18,7 +18,6 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ImportCoursController extends Controller
 {
-    // Dossier unique d’import (conforme à ton arborescence)
     private const IMPORT_DIR = 'private/imports_tmp';
 
     public function index()
@@ -26,21 +25,15 @@ class ImportCoursController extends Controller
         return view('telephoniste.import.index');
     }
 
-    /**
-     * Upload + prévisualisation (20 premières lignes).
-     */
     public function previsualiser(ImportCoursRequest $request)
     {
         $fichier = $request->file('fichier');
 
-        // 1) Dossier garanti
         Storage::disk('local')->makeDirectory(self::IMPORT_DIR);
 
-        // 2) Enregistrement sous storage/app/private/imports_tmp/...
         $nomFinal = uniqid('import_') . '_' . preg_replace('/[^\w\-.]+/u', '_', $fichier->getClientOriginalName());
         $chemin   = $fichier->storeAs(self::IMPORT_DIR, $nomFinal, 'local'); // <-- chemin relatif à storage/app
 
-        // 3) Vérification avec Storage
         if (!Storage::disk('local')->exists($chemin)) {
             return back()->withErrors([
                 'fichier' => "Fichier introuvable après l’upload (chemin: {$chemin}). Vérifie les droits d’écriture de storage/app."
@@ -48,7 +41,6 @@ class ImportCoursController extends Controller
         }
         $fullPath = Storage::disk('local')->path($chemin);
 
-        // 4) Lecture classeur
         $spreadsheet = IOFactory::load($fullPath);
         $sheet = $spreadsheet->getSheetByName('Transfert') ?? $spreadsheet->getSheet(0);
         $tableau = $sheet->toArray(null, true, true, false);
@@ -57,19 +49,17 @@ class ImportCoursController extends Controller
             return back()->withErrors(['fichier' => 'Impossible de lire des données (onglet "Transfert").']);
         }
 
-        // 5) Headers + aperçu
         $headers = $this->normalizeHeaders(array_map('strval', array_shift($tableau)));
         $apercu = [];
         foreach (array_slice($tableau, 0, 20) as $row) {
             $apercu[] = $this->assocByHeaders($headers, $row);
         }
 
-        // 6) Session d’import
         $token = 'import_' . bin2hex(random_bytes(8));
         session([
             'import_token' => $token,
             $token => [
-                'chemin'           => $chemin, // ex: private/imports_tmp/...
+                'chemin'           => $chemin,
                 'headers'          => $headers,
                 'fichier_original' => $fichier->getClientOriginalName(),
                 'total_lignes'     => count($tableau),
@@ -85,9 +75,7 @@ class ImportCoursController extends Controller
         ]);
     }
 
-    /**
-     * Confirmation = création lot + lignes_import + courses (statut=importe).
-     */
+
     public function confirmer(Request $request)
     {
         $request->validate([
@@ -102,7 +90,7 @@ class ImportCoursController extends Controller
                 ->with('status', 'Session d’import expirée ou invalide. Recommencez.');
         }
 
-        $chemin  = $session['chemin']  ?? null;   // ex: private/imports_tmp/...
+        $chemin  = $session['chemin']  ?? null;
         $headers = $session['headers'] ?? null;
 
         if (!$chemin || !$headers) {
@@ -110,7 +98,6 @@ class ImportCoursController extends Controller
                 ->with('status', 'Données d’import manquantes. Recommencez.');
         }
 
-        // ✅ Vérification avec Storage (même disque/chemin qu’à l’upload)
         if (!Storage::disk('local')->exists($chemin)) {
             return redirect()->route('telephoniste.import.nouveau')
                 ->withErrors(['fichier' => "Fichier introuvable ({$chemin}). Le fichier a peut-être été supprimé ou déplacé. Refais la prévisualisation."]);
@@ -185,7 +172,6 @@ class ImportCoursController extends Controller
             ->with('status', "Import terminé: {$ok} ok, {$ko} erreurs.");
     }
 
-    // ---------- Helpers ----------
 
     private function normalizeHeaders(array $headers): array
     {

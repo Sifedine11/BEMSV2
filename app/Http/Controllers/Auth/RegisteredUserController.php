@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules;
 class RegisteredUserController extends Controller
 {
     /**
-     * Affiche la vue d'inscription (tu peux la masquer si tu ne veux pas de self-register).
+     * Affiche la vue d'inscription
      */
     public function create()
     {

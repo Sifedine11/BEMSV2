@@ -8,7 +8,6 @@ class Destination extends Model
 {
     protected $table = 'destinations';
 
-    // Autoriser explicitement tous les champs que l'on enregistre
     protected $fillable = [
         'nom',
         'adresse',

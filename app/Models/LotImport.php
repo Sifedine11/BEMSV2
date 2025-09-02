@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class LotImport extends Model
 {
     protected $table = 'lots_imports';
-    public $timestamps = false; // la table n'a pas created_at / updated_at
+    public $timestamps = false;
 
     protected $fillable = [
         'fichier_source',
@@ -31,14 +31,11 @@ class LotImport extends Model
         'lignes_erreur'=> 'integer',
     ];
 
-    /** Utilisateur qui a lancé l'import */
     public function importeur(): BelongsTo
     {
-        // Attention: ton modèle d’utilisateur s’appelle Utilisateur (pas User)
         return $this->belongsTo(Utilisateur::class, 'importe_par_id');
     }
 
-    /** Lignes d'import liées */
     public function lignes(): HasMany
     {
         return $this->hasMany(LigneImport::class, 'lot_import_id');

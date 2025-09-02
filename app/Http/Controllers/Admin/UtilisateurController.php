@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UtilisateurController extends Controller
 {
-    /**
-     * Retourne la liste canonique des rôles.
-     */
+
     private function roles(): array
     {
         return ['admin', 'telephoniste', 'coordinateur', 'chauffeur'];

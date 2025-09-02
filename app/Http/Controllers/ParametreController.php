@@ -10,29 +10,28 @@ use Illuminate\Support\Facades\Schema;
 
 class ParametreController extends Controller
 {
-    /** Page Paramètres (profil + réglages) */
+
     public function edit(Request $request)
     {
         /** @var Utilisateur $user */
         $user = Auth::user();
 
-        // Préférences (colonne JSON si dispo, sinon session)
+
         [$prefs, $persistable] = $this->getUserPreferences($user);
 
         return view('parametres.edit', [
             'user'        => $user,
             'prefs'       => $prefs,
-            'persistable' => $persistable, // true = stocké en DB
+            'persistable' => $persistable,
         ]);
     }
 
-    /** Alias pour compat sidebar "parametres.index" */
+
     public function index(Request $request)
     {
         return $this->edit($request);
     }
 
-    /** Enregistre mot de passe + préférences */
     public function update(Request $request)
     {
         /** @var Utilisateur $user */
@@ -44,7 +43,6 @@ class ParametreController extends Controller
         ]);
 
         if (!empty($data['password'])) {
-            // ta colonne s’appelle "mot_de_passe"
             $user->mot_de_passe = Hash::make($data['password']);
         }
 
@@ -64,7 +62,6 @@ class ParametreController extends Controller
         return back()->with('status', 'Paramètres enregistrés.');
     }
 
-    /* ================= Helpers ================= */
 
     protected function getUserPreferences(Utilisateur $user): array
     {

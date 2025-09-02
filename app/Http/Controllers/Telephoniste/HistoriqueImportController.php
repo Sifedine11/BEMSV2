@@ -12,25 +12,17 @@ class HistoriqueImportController extends Controller
 {
     public function index()
     {
-        // Pagination (12 par page), avec l’utilisateur importeur
         $lots = LotImport::with('importeur')
             ->orderByDesc('commence_le')
             ->orderByDesc('id')
             ->paginate(12);
 
-        // Vue : resources/views/telephoniste/imports/historique.blade.php
         return view('telephoniste.imports.historique', compact('lots'));
     }
 
-    /**
-     * Affiche le contenu d’un lot (même esprit que la prévisualisation) :
-     * - entête du lot
-     * - journal
-     * - lignes importées (courses rattachées au lot)
-     */
+
     public function show(LotImport $lot)
     {
-        // Récupère les courses du lot
         $courses = Course::query()
             ->where('lot_import_id', $lot->id)
             ->orderBy('date_service')
@@ -47,7 +39,6 @@ class HistoriqueImportController extends Controller
                 'statut',
             ]);
 
-        // Map clients pour afficher "Nom Prénom" au lieu de l'id
         $clients = collect();
         $clientIds = $courses->pluck('client_id')->filter()->unique()->values();
         if ($clientIds->isNotEmpty()) {
@@ -58,7 +49,6 @@ class HistoriqueImportController extends Controller
                 ->keyBy('id');
         }
 
-        // Vue : resources/views/telephoniste/imports/show.blade.php
         return view('telephoniste.imports.show', [
             'lot'     => $lot->load('importeur'),
             'courses' => $courses,
