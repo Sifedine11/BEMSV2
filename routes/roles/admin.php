@@ -1,7 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// Admin Controllers
 use App\Http\Controllers\Admin\UtilisateurController;
+use App\Http\Controllers\Admin\BenevoleController;
+use App\Http\Controllers\Admin\DestinationController;
+use App\Http\Controllers\Admin\ClientController;
 
 Route::middleware(['auth','role:admin'])
     ->prefix('admin')
@@ -12,13 +17,15 @@ Route::middleware(['auth','role:admin'])
         Route::resource('utilisateurs', UtilisateurController::class)
             ->parameters(['utilisateurs' => 'utilisateur']);
 
-        // ---- PLACEHOLDERS pour les autres menus ----
-        Route::get('benevoles', fn() => view('admin.benevoles.index'))
-            ->name('benevoles.index');
+        // ---- BENEVOLES (CRUD) ----
+        Route::resource('benevoles', BenevoleController::class)
+            ->parameters(['benevoles' => 'benevole']);
 
-        Route::get('clients', fn() => view('admin.clients.index'))
-            ->name('clients.index');
+        // ---- DESTINATIONS (CRUD) ----
+        Route::resource('destinations', DestinationController::class)
+            ->parameters(['destinations' => 'destination']);
 
-        Route::get('destinations', fn() => view('admin.destinations.index'))
-            ->name('destinations.index');
+        // ---- CLIENTS (CRUD) ----
+        Route::resource('clients', ClientController::class)
+            ->parameters(['clients' => 'client']);
     });

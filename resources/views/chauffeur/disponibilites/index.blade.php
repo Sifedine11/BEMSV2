@@ -67,6 +67,11 @@
                 </button>
             </div>
         </form>
+        <div class="mt-3 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 px-3 py-2 text-sm">
+            ⚠️ Attention : si vous indiquez une disponibilité jusqu’à <strong>18h</strong> (par exemple),
+            cela signifie que vous acceptez de commencer une course à <strong>18h</strong>,
+            donc celle-ci pourra se terminer plus tard.
+        </div>
     </div>
 
     {{-- Liste du jour sélectionné --}}
@@ -129,7 +134,9 @@
 
             @forelse($grouped as $jour => $items)
                 <div class="px-4 py-3">
-                    <div class="text-sm font-medium text-gray-700 mb-2">{{ $jour }}</div>
+                    <div class="text-sm font-medium text-gray-700 mb-2">
+                    {{ \Illuminate\Support\Str::ucfirst(\Illuminate\Support\Carbon::parse($jour)->locale('fr')->isoFormat('dddd D MMMM YYYY')) }}
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead class="bg-gray-50">

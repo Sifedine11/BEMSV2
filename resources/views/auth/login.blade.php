@@ -5,8 +5,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Association BEMS — Connexion</title>
-
-  {{-- Pour un proto rapide : Tailwind CDN. (Remplace par @vite si tu as déjà Tailwind en local) --}}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { theme: { extend: { colors: { brand: { 500: "#0f172a"} } } } }
@@ -84,24 +82,6 @@
             </button>
           </div>
 
-          <!-- Rôle -->
-          <label class="block text-sm font-medium text-gray-700">Rôle</label>
-          <div class="relative">
-            <select name="role" class="w-full appearance-none rounded-xl border border-gray-300 bg-white py-2.5 pl-3 pr-10 text-sm outline-none focus:border-gray-400">
-              <option value="" {{ old('role')==='' ? 'selected' : '' }}>—</option>
-              <option value="admin" {{ old('role','admin')==='admin' ? 'selected' : '' }}>Admin</option>
-              <option value="telephoniste" {{ old('role')==='telephoniste' ? 'selected' : '' }}>Téléphoniste</option>
-              <option value="coordinateur" {{ old('role')==='coordinateur' ? 'selected' : '' }}>Coordinateur</option>
-              <option value="chauffeur" {{ old('role')==='chauffeur' ? 'selected' : '' }}>Chauffeur</option>
-            </select>
-            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <!-- Icône chevron -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.061l-4.24 4.239a1 1 0 01-1.42 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd" />
-              </svg>
-            </span>
-          </div>
-
           <!-- Ligne options -->
           <div class="flex items-center justify-between">
             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
@@ -109,7 +89,6 @@
                      class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-0">
               <span>Se souvenir de moi</span>
             </label>
-            <a href="#" class="text-sm text-gray-500 hover:text-gray-700">Mot de passe oublié&nbsp;?</a>
           </div>
 
           <!-- Bouton -->

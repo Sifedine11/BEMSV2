@@ -23,7 +23,18 @@
             </div>
 
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+                @if (isset($slot))
+                    {{-- Utilisé quand on rend <x-guest-layout> ... --}}
+                    {{ $slot }}
+                @elseif (View::hasSection('content'))
+                    {{-- Compatibilité avec @section('content') --}}
+                    @yield('content')
+                @elseif (View::hasSection('contenu'))
+                    {{-- Compatibilité avec @section('contenu') --}}
+                    @yield('contenu')
+                @else
+                    {{-- Aucun contenu fourni --}}
+                @endif
             </div>
         </div>
     </body>
